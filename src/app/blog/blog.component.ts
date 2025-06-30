@@ -48,7 +48,7 @@ export class BlogComponent implements OnInit {
     this.markdownService.renderer.link = ({href, title, text}) => {
           console.log("render href: " + href);
           if (href.endsWith(".mp4")) {
-            return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'
+            return '<video id="' + title + '" width="500" height="380" controls preload="none">'
               + '<source src="' + href + '" type="video/mp4">Your browser does not support the video tag.</video>';
           } else if (href.endsWith(".mp3")) {
             return '<audio controls>'
@@ -63,7 +63,7 @@ export class BlogComponent implements OnInit {
     this.markdownService.renderer.image = ({href, title, text}) => {
       console.log("render link: " + href);
       if (href.endsWith(".mp4")) {
-        return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'
+        return '<video id="' + title + '" width="500" height="380" controls preload="none">'
           + '<source src="http://' + this.listXor + '/' + href + '" type="video/mp4">Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'

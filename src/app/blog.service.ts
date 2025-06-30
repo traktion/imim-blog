@@ -49,18 +49,18 @@ export class BlogService {
     const formData = new FormData();
     const file = new File([contents], name.replace(/ /g, "-").replace(/[^0-9a-z\-]/gi, '').toLowerCase() + ".md", {});
     formData.append("filename", file);
-    return this.http.post<ArticleStatus>('/api/v1/public_archive', formData, { responseType: 'json'});
+    return this.http.post<ArticleStatus>('/anttp-0/multipart/public_archive', formData, { responseType: 'json'});
   }
 
   createArticleForExistingBlog(listXor: string, contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
     const file = new File([contents], name.replace(/ /g, "-").replace(/[^0-9a-z\-]/gi, '').toLowerCase() + ".md", {});
     formData.append("filename", file);
-    return this.http.put<ArticleStatus>('/api/v1/public_archive/' + listXor, formData, { responseType: 'json'});
+    return this.http.put<ArticleStatus>('/anttp-0/multipart/public_archive/' + listXor, formData, { responseType: 'json'});
   }
 
   getArticleStatus(id: string): Observable<ArticleStatus> {
-    return this.http.get<ArticleStatus>('/api/v1/public_archive/status/' + id, { responseType: 'json'});
+    return this.http.get<ArticleStatus>('/anttp-0/public_archive/status/' + id, { responseType: 'json'});
   }
 
   isImmutable(address: string): boolean {
@@ -68,25 +68,25 @@ export class BlogService {
   }
 
   getPointer(address: string): Observable<Pointer> {
-    return this.http.get<Pointer>('/api/v1/pointer/' + address, { responseType: 'json'});
+    return this.http.get<Pointer>('/anttp-0/pointer/' + address, { responseType: 'json'});
   }
 
-  setPointer(address: string, name: string, target: string): Observable<Pointer> {
-    let pointer = new Pointer(name, target, address);
-    return this.http.put<Pointer>('/api/v1/pointer/' + address, pointer, { responseType: 'json'});
+  setPointer(address: string, name: string, content: string): Observable<Pointer> {
+    let pointer = new Pointer(name, content, address);
+    return this.http.put<Pointer>('/anttp-0/pointer/' + address, pointer, { responseType: 'json'});
   }
 
-  createPointer(name: string, target: string): Observable<Pointer> {
-    let pointer = new Pointer(name, target);
-    return this.http.post<Pointer>('/api/v1/pointer', pointer, { responseType: 'json'});
+  createPointer(name: string, content: string): Observable<Pointer> {
+    let pointer = new Pointer(name, content);
+    return this.http.post<Pointer>('/anttp-0/pointer', pointer, { responseType: 'json'});
   }
 
   getRegister(address: string): Observable<Register> {
-    return this.http.get<Register>('/api/v1/register/' + address, { responseType: 'json'});
+    return this.http.get<Register>('/anttp-0/register/' + address, { responseType: 'json'});
   }
 
   setRegister(address: string, name: string, content: string): Observable<Register> {
     let register = new Register(name, content, address);
-    return this.http.put<Register>('/api/v1/register/' + address, register, { responseType: 'json'});
+    return this.http.put<Register>('/anttp-0/register/' + address, register, { responseType: 'json'});
   }
 }

@@ -88,10 +88,10 @@ export class PublishComponent implements OnInit {
       this.createArticle();
     } else {
       this.blogService.getPointer(this.listXor).subscribe(pointer => {
-        console.log("pointer: " + pointer.target);
-        if (pointer.target) {
+        console.log("pointer: " + pointer.content);
+        if (pointer.content) {
           this.sourceAddress = this.listXor;
-          this.blogAddress = pointer.target;
+          this.blogAddress = pointer.content;
           this.blogAddressType = 'pointer';
           this.createArticle();
         } else {
