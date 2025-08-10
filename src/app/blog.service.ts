@@ -19,7 +19,9 @@ export class BlogService {
   ) {}
 
   getSnConfig(listXor: string): Observable<Listing[]> {
-    return this.http.get<Listing[]>("http://" + listXor + '/', { responseType: 'json'})
+    var origin = "http://";
+    if (window.location.pathname.startsWith("/pimim")) origin = window.location.origin  + "/";
+    return this.http.get<Listing[]>(origin + listXor + "/", { responseType: 'json'})
       .pipe(
         map((items:Listing[]) => items.sort((a: Listing, b: Listing) => {
           if (a.mtime > b.mtime) {
@@ -33,7 +35,7 @@ export class BlogService {
   }
 
   getArticle(listXor: string, articleXor: string): Observable<string> {
-    return this.http.get("http://" + listXor + "/" + articleXor, { responseType: 'text'});
+    return this.http.get(window.location.origin + "/" + listXor + "/" + articleXor, { responseType: 'text'});
   }
 
   formatMarkdownHeader1(document: string, articleUrl: string): string {

@@ -45,10 +45,10 @@ export class ArticleComponent implements OnInit {
       console.log("render href: " + href);
       if (href.endsWith(".mp4")) {
         return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'
-          + '<source src="' + href + '" type="video/mp4">Your browser does not support the video tag.</video>';
+          + '<source src="' + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'
-          + '<source src="'  + href + '" type="audio/mp3">Your browser does not support the audio element.</audio>';
+          + '<source src="'  + href + '" type="audio/mp3" />Your browser does not support the audio element.</audio>';
       } else if (href.startsWith("data:image")) {
         return '<img class="img-fluid" src="' + href + '" title="' + title + '" alt="' + text + '">';
       } else {
@@ -57,17 +57,19 @@ export class ArticleComponent implements OnInit {
     };
 
     this.markdownService.renderer.image = ({href, title, text}) => {
+      var origin = "http://";
+      if (window.location.pathname.startsWith("/pimim")) origin = window.location.origin  + "/";
       console.log("render image: " + href);
       if (href.endsWith(".mp4")) {
         return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'
-          + '<source src="http://' + this.listXor + '/' + href + '" type="video/mp4">Your browser does not support the video tag.</video>';
+          + '<source src="' + origin + this.listXor + '/' + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'
-          + '<source src="http://' + this.listXor + '/' + href + '" type="audio/mp3">Your browser does not support the audio element.</audio>';
+          + '<source src="' + origin + this.listXor + '/' + href + '" type="audio/mp3" />Your browser does not support the audio element.</audio>';
       } else if (href.startsWith("data:image")) {
         return '<img class="img-fluid" src="' + href + '" title="' + title + '" alt="' + text + '">';
       } else {
-        return '<img class="img-fluid" src="http://' + this.listXor + '/' + href + '" title="' + title + '" alt="' + text + '">';
+        return '<img class="img-fluid" src="' + origin + this.listXor + '/' + href + '" title="' + title + '" alt="' + text + '">';
       }
     };
 

@@ -124,7 +124,7 @@ The blog URLs are used to derive the location of the blog and article data. The 
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+Run `ng serve --serve-path /pimim/` for a dev server. Navigate to `http://localhost:4200/pimim/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -133,6 +133,26 @@ Run `ng generate component component-name` to generate a new component. You can 
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+
+For creating a proxy IMIM build:
+
+`ng build --configuration production --base-href /pimim/ --deploy-url /pimim/`
+
+For creating a direct IMIM build:
+
+`ng build --configuration production --base-href / --deploy-url /`
+
+Then copy `/src/app-conf.json` to `dist/i-am-immutable-client/app-conf.json`, before uploading.
+
+Then build tarchive:
+
+`cd i-am-immutable-client/; tar -cf ../archive.tar ./; cd ..; python3 ~/dev/tarindexer/tarindexer.py -i archive.tar archive.tar.idx; tar -rf archive.tar archive.tar.idx;`
+
+Then upload to Autonomi:
+
+`ant file upload -p archive.tar`
+
+Then update pointer for `imim` (direct) or `pimim` (proxy) to use the latest content address of archive.tar.
 
 ## Running unit tests
 

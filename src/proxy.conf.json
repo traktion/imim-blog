@@ -2,5 +2,9 @@
   "/anttp-0": {
     "target": "http://localhost:18888",
     "secure": false
+  },
+  "/traktion-blog": {
+    "target": "http://localhost:18888",
+    "secure": false
   }
 }
