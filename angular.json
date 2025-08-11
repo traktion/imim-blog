@@ -32,13 +32,15 @@
               "node_modules/ngx-spinner/animations/ball-scale-multiple.css",
               "node_modules/quill/dist/quill.snow.css",
               "node_modules/quill/dist/quill.core.css",
-              "node_modules/quilljs-markdown/dist/quilljs-markdown-common-style.css"
+              "node_modules/quilljs-markdown/dist/quilljs-markdown-common-style.css",
+              "node_modules/video.js/dist/video-js.min.css"
             ],
             "scripts": [
               "node_modules/marked/lib/marked.esm.js",
               "node_modules/quill/dist/quill.core.js",
               "node_modules/quilljs-markdown/index.js",
-              "node_modules/turndown/dist/turndown.js"
+              "node_modules/turndown/dist/turndown.js",
+              "node_modules/video.js/dist/video.min.js"
             ],
             "baseHref": "/gimim/",
             "deployUrl": "/gimim/"
@@ -61,8 +63,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "3mb",
+                  "maximumError": "4mb"
                 },
                 {
                   "type": "anyComponentStyle",

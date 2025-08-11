@@ -42,9 +42,10 @@ export class ArticleComponent implements OnInit {
     this.articleXor = this.route.snapshot.paramMap.get('articleXor') ?? '';
 
     this.markdownService.renderer.link = ({href, title, text}) => {
-      console.log("render href: " + href);
+      if (title == null) title = Math.floor(Math.random() * 10000).toString();
+      console.log("render link: " + href + ", title: " + title)
       if (href.endsWith(".mp4")) {
-        return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'
+        return '<video id="' + title + '" width="100%" controls preload="metadata" vjs-fluid vjs-playback-rate class="video-js">'
           + '<source src="' + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'
@@ -57,11 +58,12 @@ export class ArticleComponent implements OnInit {
     };
 
     this.markdownService.renderer.image = ({href, title, text}) => {
+      if (title == null) title = Math.floor(Math.random() * 10000).toString();
       var origin = "http://";
       if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
-      console.log("render image: " + href);
+      console.log("render image: " + href + ", title: " + title)
       if (href.endsWith(".mp4")) {
-        return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'
+        return '<video id="' + title + '" width="100%" controls preload="metadata" vjs-fluid vjs-playback-rate class="video-js">'
           + '<source src="' + origin + this.listXor + '/' + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'

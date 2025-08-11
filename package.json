@@ -55,6 +55,7 @@
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.32.1"
+    "typescript-eslint": "8.32.1",
+    "video.js": "^8.23.4"
   }
 }
