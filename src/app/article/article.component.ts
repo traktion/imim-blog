@@ -58,7 +58,7 @@ export class ArticleComponent implements OnInit {
 
     this.markdownService.renderer.image = ({href, title, text}) => {
       var origin = "http://";
-      if (window.location.pathname.startsWith("/pimim")) origin = window.location.origin  + "/";
+      if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
       console.log("render image: " + href);
       if (href.endsWith(".mp4")) {
         return '<video id="' + title + '" width="500" height="380" controls preload="metadata">'

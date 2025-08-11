@@ -20,7 +20,7 @@ export class BlogService {
 
   getSnConfig(listXor: string): Observable<Listing[]> {
     var origin = "http://";
-    if (window.location.pathname.startsWith("/pimim")) origin = window.location.origin  + "/";
+    if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
     return this.http.get<Listing[]>(origin + listXor + "/", { responseType: 'json'})
       .pipe(
         map((items:Listing[]) => items.sort((a: Listing, b: Listing) => {
