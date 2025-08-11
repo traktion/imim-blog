@@ -40,8 +40,8 @@
               "node_modules/quilljs-markdown/index.js",
               "node_modules/turndown/dist/turndown.js"
             ],
-            "baseHref": "/pimim/",
-            "deployUrl": "/pimim/"
+            "baseHref": "/gimim/",
+            "deployUrl": "/gimim/"
           },
           "configurations": {
             "production": {
