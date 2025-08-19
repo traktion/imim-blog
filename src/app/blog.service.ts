@@ -35,7 +35,9 @@ export class BlogService {
   }
 
   getArticle(listXor: string, articleXor: string): Observable<string> {
-    return this.http.get(window.location.origin + "/" + listXor + "/" + articleXor, { responseType: 'text'});
+    var origin = "http://";
+    if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
+    return this.http.get(origin + listXor + "/" + articleXor, { responseType: 'text'});
   }
 
   formatMarkdownHeader1(document: string, articleUrl: string): string {

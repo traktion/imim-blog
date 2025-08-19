@@ -42,8 +42,7 @@
               "node_modules/turndown/dist/turndown.js",
               "node_modules/video.js/dist/video.min.js"
             ],
-            "baseHref": "/gimim/",
-            "deployUrl": "/gimim/"
+            "baseHref": "/"
           },
           "configurations": {
             "production": {

@@ -140,7 +140,9 @@ For creating a gateway IMIM build:
 
 For creating a proxy IMIM build:
 
-`ng build --configuration production --base-href / --deploy-url /`
+(only have baseHref in angular.json / build)
+
+`ng build --configuration production`
 
 Then copy `/src/app-conf.json` to `dist/i-am-immutable-client/app-conf.json`, before uploading.
 
