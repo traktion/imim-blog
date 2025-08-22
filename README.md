@@ -1,128 +1,199 @@
 # I Am IMMUTABLE client
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.12.
-
 ## Background
 
-_I Am Immutable_ is a blog application which is native to the Safe Network. It allows a blog's articles to be
-persisted to the network and accessible _in perpetuity_. Once the native Safe Network browser is available,
-_I Am Immutable_ will automatically switch to access the same data without needing a gateway application.
+_I Am Immutable_, or IMIM, is a blog application which is native to Autonomi. It allows a blog's articles to be
+persisted to the network and accessible _in perpetuity_.
 
 You will not be mutable. Neither will your data.
 
-This client should be used with the **sn_httpd** application. This provides an HTTP gateway to the Safe Network
-where required. The sn_httpd application also hosts the static application files directly for convenience, but these could also
-live on the Safe Network too (in a future release).
+IMIM blogs are hosted on AntTP and can be viewed using a regular web browser. You can choose to use either a local instance of
+AntTP for maximum performance and privacy, or you can use a hosted gateway (such as https://anttp.antsnest.site/gimim).
 
-The sn_httpd application can be run locally or remotely. It just needs to be pointed to a Safe Network node to
-retrieve Safe Network data. This prevents censorship of the data, even if the website hosting the client becomes
-unavailable.
+AntTP is an HTTP proxy, which provides an interface between your web browser and the Autonomi Network. You can find out more about
+AntTP here: https://github.com/traktion/AntTP
+
+## Accessing Content
+
+The simplest way to view content is through a hosted AntTP gateway. My blog can be viewed here, for example: https://anttp.antsnest.site/gimim/blog/traktion-blog
+
+A better way is to run AntTP locally, where you get performance and privacy benefits. My blog can then be viewed
+either via a local gateway (http://localhost:18888/gimim/blog/traktion-blog) or you can configure your alternative browser to use
+view it via an AntTP proxy (http://imim/blog/traktion-blog).
 
 ## Adding Content
+
+### Using the UI
+
+Using the UI is the simplest way to upload a blog. No CLI, no fiddling about with text editors. You just dump your thoughts into a WYSIWYG editor, then click a button.
+
+In the spirit of dog fooding, there is an article about it on my blog too: https://anttp.antsnest.site/gimim/blog/traktion-blog/article/say-goodbye-to-the-cli.md#article
+
+> IMPORTANT: At the time of writing, you must be running the AntTP as a local proxy to use the UI! You must also set your 'wallet-private-key' and 'app-private-key' as AntTP parameters.
+> 
+> In a future version of IMIM, you will be able to use gateways, even public gateways, to upload articles. AntTP will soon support remote upload payments.
+
+#### Creating a New Blog
+
+In short, you go to the 'publish' tab and complete the form:
+
+1. Go to http://imim/blog/91d16e58e9164bccd29a8fd8d25218a61d8253b51c26119791b2633ff4f6b309/publish#publish ![Blog Publish Form - Start](blog_publish_form1.png)
+2. Set 'Publish To:' to 'Publish to a new blog'
+3. Set 'Blog Name:' to whatever you want to call the blog (REMEMBER THIS - it allows you to add more articles!)
+4. Set 'Article Name:' to your article name
+5. Start writing content in the editor. Add some pictures too, then click 'Publish'
+6. Status information should start showing, then shortly after, you will be given an XOR address (and link) to view your new blog article. ![Blog Publish Form - Uploaded](blog_publish_form2.png)
+
+You can see the above blog here:
+
+- Through local AntTP proxy: http://imim/blog/555e60041d291218f955033625b38faa978adfea50a17a8aa83ff0d5c5fd9a40
+- Through Ant's Nest gateway: https://anttp.antsnest.site/gimim/blog/555e60041d291218f955033625b38faa978adfea50a17a8aa83ff0d5c5fd9a40
+
+> NOTE: Only an immutable XOR address is created by the UI at this time. See creating a pointer below to provide a dynamic address.
+> 
+> AntTP supports creating pointers through a REST interface and this functionality will be integrated soon!
+
+#### Adding Another Article
+
+You can also add articles through the UI. Browse to one of your existing blog articles, then click the 'publish' tab and follow the instructions:
+
+1. Using the above example, go to http://imim/blog/555e60041d291218f955033625b38faa978adfea50a17a8aa83ff0d5c5fd9a40/publish#publish
+2. Set 'Publish To:' to 'Publish to this blog <XOR>'
+3. Set 'Blog Name:' to the _same name_ as before
+4. Set 'Article Name:' to your new article's name
+5. Add your text and images to the editor, then click publish.
+6. Wait for the status update and your new XOR link.
+
+You can see the above blog here:
+
+- Through local AntTP proxy: http://imim/blog/8af990d7fbb235f8d2d3656f7202840edfc764bac1adf7ee1bcb248241343d91
+- Through Ant's Nest gateway: https://anttp.antsnest.site/gimim/blog/8af990d7fbb235f8d2d3656f7202840edfc764bac1adf7ee1bcb248241343d91
+
+Let's add a pointer this time with a (little!) CLI magic:
+
+```bash
+ant pointer create impossible_futures 8af990d7fbb235f8d2d3656f7202840edfc764bac1adf7ee1bcb248241343d91
+```
+
+This returned a pointer of `b63e664aa6786eea741d8d931ddbf4361c4406af51bf894c89989e2e3957180a0ca9c15e2cc5786db5c5a34bda1786a2` from my key. So, now
+we can see the blog at:
+
+- Through local AntTP proxy: http://imim/blog/b63e664aa6786eea741d8d931ddbf4361c4406af51bf894c89989e2e3957180a0ca9c15e2cc5786db5c5a34bda1786a2
+- Through Ant's Nest gateway: https://anttp.antsnest.site/gimim/blog/b63e664aa6786eea741d8d931ddbf4361c4406af51bf894c89989e2e3957180a0ca9c15e2cc5786db5c5a34bda1786a2
+
+What happens when we edit the pointer through the proxy? Good question! It will upload the archive, but not update the pointer (a bug it seems). Expect
+this functionality to come to IMIM soon!
+
+### Using ant CLI
+
+Using the CLI can give you more control over your content. You can use your own editor, curate your image links, add automation, or add your own flair.
+
+Remember, the data always remains your own, no matter which way you upload it.
+
+#### Creating a New Blog
 
 Articles should be created using Markdown (like this README.md file). These are easy to write
 with a simple syntax and editors are available too. The application will convert these Markdown
 files to HTML on the fly.
 
-The articles can also have links to images defined, using Safe URLs. These will be redirected by
-the application to retrieve them via the sn_httpd gateway automatically.
+There are many Markdown editors out there, but they are easy to write in a simple text editor too. Take a look at https://www.markdownguide.org/ for
+more information about Markdown. They also have a cheat sheet to get you started: https://www.markdownguide.org/cheat-sheet/
 
-Once the articles have been written, they can be uploaded to the Safe Network using the CLI. Remember
-to upload any images linked to the article:
+Any images or videos should be in the regular Markdown format and should be saved to the same folder as the article markdown files, e.g. `![My Photo](photo.jpeg)`
+for images or `![My Video](video.mp4)` for videos.
 
-```
-$ safe files upload "Safe Network Awakens.md" -p
-"Safe Network Awakens.md" 5caa08a4ed242440b8321d881121bf61cea4f734044781d8963c0eef6d3c5247
+Once the articles have been written, they can be uploaded to Autonomi as a 'public archive' using the `ant` CLI.
 
-$ safe files upload "Clean, green, immutable dream.md" -p 
-"Clean, green, immutable dream.md" 926a4e83b45d4dac7f669bc6029abdce76065eb80dee23efcb5ab10554294c03
+A 'public archive' is a collection of files, which is similar to a folder on your computer. All the files can then be referenced
+using an Autonomi address, which is sometimes known as an XOR address.
 
-$ safe files put 1_dH5Ce6neTHIfEkAbmsr1BQ.jpeg -p
-FilesContainer created at: "safe://hyryyrbppafifr5apujw3kjaxyhje4jpgqwbnb3cgwrt6tc74hi4hu53gsynra"
-+  1_dH5Ce6neTHIfEkAbmsr1BQ.jpeg  safe://hygoygyq3eyyawhnjms9ziwaa1sadf5hnronymh3h3eiibapuxgt7tpjc3c
-...
-$ safe files put 1_DOuipmOec4q8Neer_95qQA.jpeg -p
-FilesContainer created at: "safe://hyryyrbeg81nt9xrz81t4qot4zj47ydfckshkx166j9ojpfy8zpurcz3dzynra"
-+  1_DOuipmOec4q8Neer_95qQA.jpeg  safe://hygoygymhpekj9o3363pwgntybotaz8kp3kpfkndw3m4boqi9ty5uig91oc
+Use `ant file upload -p <your_blog_folder>` to upload your blog articles, images, videos, etc, as a public archive:
+
+```bash
+ant file upload -p "amazing_blog"
 ```
 
-Create an index file, containing the list of Safe URLs created as above.
+This will return a list of chunks which are created in the upload process. It will also return an XOR address for the public archive - this
+is the one we are interested in: This is the immutable XOR address of the blog you just uploaded. It will exist forever.
 
-```
-echo "{
-	"name": "Traktion Blog",
-	"urls": [
-		"safe://5caa08a4ed242440b8321d881121bf61cea4f734044781d8963c0eef6d3c5247",
-		"safe://926a4e83b45d4dac7f669bc6029abdce76065eb80dee23efcb5ab10554294c03"
-	],
-	"assets": []
-}" > imim-conf.json
+At the time of writing, `ant` returns something like this:
+
+```bash
+At address: 91d16e58e9164bccd29a8fd8d25218a61d8253b51c26119791b2633ff4f6b309
 ```
 
-Upload this index to the network too:
+The `91d16e58e9164bccd29a8fd8d25218a61d8253b51c26119791b2633ff4f6b309` is your blog's XOR address. Or, in this case, it is the address of the
+example Maidsafe blog. You can see it here: https://anttp.antsnest.site/gimim/blog/91d16e58e9164bccd29a8fd8d25218a61d8253b51c26119791b2633ff4f6b309
 
-```
-$ safe files upload imim-conf.json -p
-"imim-conf.json" fb31a105d47179338dcad8fe76dd0cbffcc378543ad2464e856a282d5d325d6f
-```
+#### Creating a Pointer
 
-It is recommended that an NRS URL is created to point to this index file. This prevents aggressive
-caching and allows it to be updated dynamically with new/updated articles.
+As any good blog will have lots of content, creating a pointer to your content is desirable. A pointer can also be used as a dynamic network
+address with AntTP and it will point to whichever XOR address your blog has been given (by `ant file upload`).
 
-```
-$ safe nrs create -l safe://hyfey4yj17m73on3rsdwg7uqei4gf9egqma7yisoza8yg3daof1e5apw1pe safeblog
-New NRS Map for "safe://safeblog" created at: "safe://hyryygbptdnwk5y5m14eqxgd8x1cxjs8kudpj9g4rcz1zjyz6d4z9zddddcn7a"
-+  safeblog  safe://hyfey4yj17m73on3rsdwg7uqei4gf9egqma7yisoza8yg3daof1e5apw1pe
-```
+Let's use Maidsafe's example blog to see how this can work.
 
-Conversely, articles, images and other content benefit from using an XOR URL. These can then be 
-aggressively cached for an optimal user experience.
+We can use the `ant` CLI again, but this time `ant pointer create`:
 
-If changes to an article are required, upload the new content, then replace the old XOR URL with the
-new XOR URL.
-
-```
-$ safe files upload "Safe Network Awakens2.md" -p
-"Safe Network Awakens2.md" 1e14d2eac95faf5a2f09d84962ab773576d0e4c60ed6bcf91f51951010e14fed
+```bash
+ant pointer create -t maidsafe 91d16e58e9164bccd29a8fd8d25218a61d8253b51c26119791b2633ff4f6b309
 ```
 
-```
-echo "{
-	"name": "Traktion Blog",
-	"urls": [
-		"safe://1e14d2eac95faf5a2f09d84962ab773576d0e4c60ed6bcf91f51951010e14fed",
-		"safe://926a4e83b45d4dac7f669bc6029abdce76065eb80dee23efcb5ab10554294c03"
-	],
-	"assets": []
-}" > imim-conf2.json
+NOTE: If you don't have a pointer key, follow the CLI instructions to create one.
+
+This will return something including the following:
+
+```bash
+Pointer created at address: a327aa11f4cac684bf23013542789a4776a93e9b0e50bf8a06dfc8db1dc2760961105adfa37e598f03669d5c5fabe986
 ```
 
-```
-$ safe files upload imim-conf2.json -p 
-"imim-conf2.json" 56a1dff0606d724b55f552c2b9972810dee4c102aebd975f640cb43d490b6f2e
+You can now use this pointer in your URLs to share your blog, e.g. https://anttp.antsnest.site/gimim/blog/a327aa11f4cac684bf23013542789a4776a93e9b0e50bf8a06dfc8db1dc2760961105adfa37e598f03669d5c5fabe986
+
+#### Updating an Existing Blog
+
+Updating an existing blog is much like creating a new one. Just update the files in your blog directory and upload it as a 'public archive'.
+
+Only the files (chunks) that don't already exist on the network will be uploaded, so you will only need to pay for these new chunks, e.g.
+
+```bash
+ant file upload -p "amazing_blog"
 ```
 
+Don't forget to update the pointer to point at the new location returned, so that your readers can see your latest content:
+
+```bash
+ant pointer edit maidsafe a33082163be512fb471a1cca385332b32c19917deec3989a97e100d827f97baf
 ```
-$ safe nrs add -l safe://hyfey4ymsjxbk585jr17bup89w1ydrdxfhht1u3ic4aguafs5shkcze5c6o safeblog
-```
+
+Refresh your browser a couple of times, then you will now see the latest version of the blog at the same address, e.g. https://anttp.antsnest.site/gimim/blog/a327aa11f4cac684bf23013542789a4776a93e9b0e50bf8a06dfc8db1dc2760961105adfa37e598f03669d5c5fabe986
 
 ## Writing Tips
 
 Use the following format for the header title, which will allow it to be linked to the article URL when it renders:
 
 ```
-# Article Title #
+# Article Title
 ```
+
+Assume that assets (images, videos, audio, etc) are in the same folder as the articles and just reference the file names with no paths, e.g.
+
+`![My Photo](photo.jpeg)`
 
 ## Viewing Blog
 
 The blog URLs are used to derive the location of the blog and article data. The format is:
 
-```
-/blog/<blog-index-safe-url>/article/<article-safe-url>
+```bash
+/blog/<blog autonomi-address|XOR address|pointer address>/article/<article autonomi-address|XOR address|pointer address>
 ```
 
 ## Development server
+
+IMIM is open source, so if you want fork it, add features to it or contribute to the project, you are very welcome to!
+
+The easiest way to develop locally is to use a browser in with AntTP as a proxy, then use `ng serve` to host the local code. This will allow
+you to retrieve data from Autonomi, while running the latest web app code.
+
+You can also configure AntTP to use the Autonomi alpha network to avoid upload fees. See AntTP for details on how to configure bootstrapping.
 
 Run `ng serve --serve-path /gimim/` for a dev server. Navigate to `http://localhost:4200/gimim/`. The app will automatically reload if you change any of the source files.
 
@@ -146,7 +217,12 @@ For creating a proxy IMIM build:
 
 Then copy `/src/app-conf.json` to `dist/i-am-immutable-client/app-conf.json`, before uploading.
 
-Then build tarchive:
+> NOTE: Deploying for both gateways and proxies requires the document root to change. This may require changing the angular.json to correctly deploy
+> to the correct path.
+
+To improve performance, IMIM is best distributed as a tarchive (tarindexed tar file). This reduces the chunk count for both uploads and downloads.
+
+To build tarchive:
 
 `cd i-am-immutable-client/; tar -cf ../archive.tar ./; cd ..; python3 ~/dev/tarindexer/tarindexer.py -i archive.tar archive.tar.idx; tar -rf archive.tar archive.tar.idx;`
 
@@ -154,16 +230,4 @@ Then upload to Autonomi:
 
 `ant file upload -p archive.tar`
 
-Then update pointer for `imim` (proxy) or `gimim` (gateway) to use the latest content address of archive.tar.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Then update pointer for `imim` (proxy) or `gimim` (gateway) to use the latest content address of archive.tar, if appropriate (requires my key).
