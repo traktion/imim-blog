@@ -258,3 +258,7 @@ Then upload to Autonomi:
 `ant file upload -p archive.tar`
 
 Then update pointer for `imim` (proxy) or `gimim` (gateway) to use the latest content address of archive.tar, if appropriate (requires my key).
+
+## Code2Tutorial Codebase Documentation
+
+Take a look at this AI generated summary of how IMIM is designed: https://code2tutorial.com/tutorial/a82eb338-a5b6-4765-8b55-6e22cf31ae6f/index.md
