@@ -3,11 +3,11 @@
 ## Background
 
 _I Am Immutable_, or IMIM, is a blog application which is native to Autonomi. It allows a blog's articles to be
-persisted to the network and accessible _in perpetuity_.
+persisted to the network and be accessible _in perpetuity_.
 
 You will not be mutable. Neither will your data.
 
-IMIM blogs are hosted on AntTP and can be viewed using a regular web browser. You can choose to use either a local instance of
+IMIM blogs are dependent on AntTP and can be viewed using a regular web browser. You can choose to use either a local instance of
 AntTP for maximum performance and privacy, or you can use a hosted gateway (such as https://anttp.antsnest.site/gimim).
 
 AntTP is an HTTP proxy, which provides an interface between your web browser and the Autonomi Network. You can find out more about
@@ -165,6 +165,33 @@ ant pointer edit maidsafe a33082163be512fb471a1cca385332b32c19917deec3989a97e100
 ```
 
 Refresh your browser a couple of times, then you will now see the latest version of the blog at the same address, e.g. https://anttp.antsnest.site/gimim/blog/a327aa11f4cac684bf23013542789a4776a93e9b0e50bf8a06dfc8db1dc2760961105adfa37e598f03669d5c5fabe986
+
+## Tarchives
+
+Tarchives are a newly supported feature in AntTP. In short, they are a tar file, with an index appended to the end.
+
+From outside of AntTP, a 'tarchive' look the same as a 'public archive'. In short, it is another container of files, which is addressible via an
+XOR address.
+
+Tarchives allow lots of small files to be packed into a single file. This reduces the number of chunks to both upload and download. AntTP is smart
+enough to only download the chunks needed (from the tar file), which are then cached to allow other files within those chunks to be accessed quickly.
+
+Tarchives, especially with lots of small files, tend to be served much faster. For the IMIM loading traktion-blog, it is about 3x quicker from a
+en empty cache.
+
+You can see more information about tarchives at the AntTP project: https://github.com/traktion/AntTP?tab=readme-ov-file#tarchive-support
+
+> IMPORTANT: You can't currently use the UI to add/edit IMIM blogs at this time - the CLI must be used. AntTP will add support for creating/updating
+> tarchives in the near future, which IMIM will then (without changes) take advantage of.
+
+## Bookmarks
+
+How do I get those funky short names? It is a feature of AntTP, where you can give a friendly name to an XOR and pointer address. They are hard
+coded into AntTP at this time, although more can be added through the AntTP CLI. It is expected that these will be lookups to an Autonomi
+DNS style system in the near future.
+
+If you want a name added in the interim, you are welcome to create a PR to AntTP with your name and address. They will be first come, first serve
+and I reserve the right to wipe and/all at any time. It is an experimental AntTP feature after all!
 
 ## Writing Tips
 
