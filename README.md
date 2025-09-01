@@ -217,12 +217,14 @@ The blog URLs are used to derive the location of the blog and article data. The 
 
 IMIM is open source, so if you want fork it, add features to it or contribute to the project, you are very welcome to!
 
-The easiest way to develop locally is to use a browser in with AntTP as a proxy, then use `ng serve` to host the local code. This will allow
+The easiest way to develop locally is to use a browser in with AntTP as a proxy (configuration instructions here:
+https://github.com/traktion/AntTP?tab=readme-ov-file#proxy-configuration), then use `ng serve` to host the local code. This will allow
 you to retrieve data from Autonomi, while running the latest web app code.
 
 You can also configure AntTP to use the Autonomi alpha network to avoid upload fees. See AntTP for details on how to configure bootstrapping.
 
-Run `ng serve --serve-path /gimim/` for a dev server. Navigate to `http://localhost:4200/gimim/`. The app will automatically reload if you change any of the source files.
+Run `ng serve --serve-path /` for a dev server, then navigate to `http://localhost:4200/` (or http://localhost:4200/blog/traktion-blog with an example blog).
+The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -249,13 +251,8 @@ Then copy `/src/app-conf.json` to `dist/i-am-immutable-client/app-conf.json`, be
 
 To improve performance, IMIM is best distributed as a tarchive (tarindexed tar file). This reduces the chunk count for both uploads and downloads.
 
-To build tarchive:
-
-`cd i-am-immutable-client/; tar -cf ../archive.tar ./; cd ..; python3 ~/dev/tarindexer/tarindexer.py -i archive.tar archive.tar.idx; tar -rf archive.tar archive.tar.idx;`
-
-Then upload to Autonomi:
-
-`ant file upload -p archive.tar`
+Once built, the distribution files will be found in `<project_root>/dist/i-am-immutable-client`. This can be used as 'mydirectory' in the following
+tarchive creation instructions: https://github.com/traktion/AntTP?tab=readme-ov-file#tarchive-support
 
 Then update pointer for `imim` (proxy) or `gimim` (gateway) to use the latest content address of archive.tar, if appropriate (requires my key).
 
