@@ -7,7 +7,6 @@ import {MarkdownService} from 'ngx-markdown';
 import {NavigationService} from '../navigation.service';
 import {LocationStrategy} from '@angular/common';
 import {Listing} from '../listing';
-import {SnConfig} from '../sn-config';
 import {NgxSpinnerService} from "ngx-spinner";
 
 @Component({
@@ -19,11 +18,12 @@ import {NgxSpinnerService} from "ngx-spinner";
 export class BlogComponent implements OnInit {
 
   blogName: string;
-  articleUrls: Listing[];
   blogSubscription: Subscription;
   articleSubscription: Subscription;
   listXor: string;
   articles: Message[];
+  filePrefix: string;
+  listSuffix: string;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -33,17 +33,30 @@ export class BlogComponent implements OnInit {
               private locationStrategy: LocationStrategy,
               private spinner: NgxSpinnerService) {
     this.blogName = 'IMIM';
-    this.articleUrls = [];
     this.blogSubscription = new Subscription();
     this.articleSubscription = new Subscription();
     this.listXor = '';
     this.articles = [];
+    this.filePrefix = '';
+    this.listSuffix = '';
   }
 
   ngOnInit(): void {
     this.spinner.show();
 
     this.listXor = this.route.snapshot.paramMap.get('listXor') ?? '';
+    var path1 = this.route.snapshot.paramMap.get('path1') ?? '';
+    var path2 = this.route.snapshot.paramMap.get('path2') ?? '';
+    if (path1 != '') {
+      this.filePrefix = this.filePrefix + path1;
+      this.listSuffix = this.listSuffix + "/" + path1;
+    }
+    if (path2 != '') {
+      this.filePrefix = this.filePrefix + "/" + path2;
+      this.listSuffix = this.listSuffix + "/" + path2;
+    }
+    if (this.filePrefix != '') this.filePrefix = this.filePrefix + "/";
+    console.log("path1: " + path1 + ", path2: " + path2 + ", this.listSuffix: " + this.listSuffix + ", this.filePrefix: " + this.filePrefix);
 
     this.markdownService.renderer.link = ({href, title, text}) => {
       if (title == null) title = Math.floor(Math.random() * 10000).toString();
@@ -68,27 +81,28 @@ export class BlogComponent implements OnInit {
       console.log("render image: " + href + ", title: " + title)
       if (href.endsWith(".mp4")) {
         return '<video id="' + title + '" width="100%" controls preload="none" vjs-fluid vjs-playback-rate class="video-js">'
-          + '<source src="' + origin + this.listXor + '/' + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
+          + '<source src="' + origin + this.listXor + '/' + this.filePrefix + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'
-          + '<source src="' + origin + this.listXor + '/' + href + '" type="audio/mp3" />Your browser does not support the audio element.</audio>';
+          + '<source src="' + origin + this.listXor + '/' + this.filePrefix + href + '" type="audio/mp3" />Your browser does not support the audio element.</audio>';
       } else if (href.startsWith("data:image")) {
-        return '<img class="img-fluid" src="' + href + '" title="' + title + '" alt="' + text + '">';
+        return '<img class="img-fluid" src="' + this.filePrefix + href + '" title="' + title + '" alt="' + text + '">';
       } else {
-        return '<img class="img-fluid" src="' + origin + this.listXor + '/' + href + '" title="' + title + '" alt="' + text + '">';
+        return '<img class="img-fluid" src="' + origin + this.listXor + '/' + this.filePrefix + href + '" title="' + title + '" alt="' + text + '">';
       }
     };
 
-    this.navigationService.update(this.route.snapshot.paramMap.get('listXor') ?? '');
+    this.navigationService.update(this.listXor + this.listSuffix);
 
-    this.blogSubscription = this.blogService.getSnConfig(this.listXor)
+    this.blogSubscription = this.blogService.getDirectoryListing(this.listXor)
     .subscribe(config => {
-      this.articleUrls = config;
+      var files = config;
 
-      for (const articleXor of this.articleUrls ) {
-        if (this.isMarkdown(articleXor)) {
-          this.articleSubscription = this.blogService.getArticle(this.listXor, articleXor.name).subscribe(articleContent => {
-            const articleUrl = this.navigationService.getArticleUrl(this.listXor, articleXor.name.substring(articleXor.name.lastIndexOf('/') + 1));
+      for (const file of files ) {
+        if (this.isMarkdown(file)) {
+          // note: file.name is the full file.path
+          this.articleSubscription = this.blogService.getArticle(this.listXor, file.name).subscribe(articleContent => {
+            const articleUrl = this.navigationService.getArticleUrl(this.listXor + this.listSuffix, file.name.substring(file.name.lastIndexOf('/') + 1));
             const navArticleUrl = '/' + articleUrl;
             const markdownArticleUrl = this.locationStrategy.getBaseHref() + articleUrl + '#article';
             articleContent = this.blogService.formatMarkdownHeader1(

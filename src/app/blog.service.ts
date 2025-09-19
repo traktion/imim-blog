@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Listing} from './listing';
@@ -18,26 +18,26 @@ export class BlogService {
     private locationStrategy: LocationStrategy
   ) {}
 
-  getSnConfig(listXor: string): Observable<Listing[]> {
+  getDirectoryListing(listXor: string): Observable<Listing[]> {
     var origin = "http://";
     if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
     return this.http.get<Listing[]>(origin + listXor + "/", { responseType: 'json'})
       .pipe(
         map((items:Listing[]) => items.sort((a: Listing, b: Listing) => {
           if (a.mtime > b.mtime) {
-            return 1;
-          } else if (a.mtime > b.mtime) {
             return -1;
+          } else if (a.mtime < b.mtime) {
+            return 1;
           }
           return 0
         }))
       );
   }
 
-  getArticle(listXor: string, articleXor: string): Observable<string> {
+  getArticle(listXor: string, filePath: string): Observable<string> {
     var origin = "http://";
     if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
-    return this.http.get(origin + listXor + "/" + articleXor, { responseType: 'text'});
+    return this.http.get(origin + listXor + "/" + filePath, { responseType: 'text'});
   }
 
   formatMarkdownHeader1(document: string, articleUrl: string): string {
@@ -45,21 +45,22 @@ export class BlogService {
   }
 
   formatMarkdownSafeUrls(document: string): string {
+    // todo: change URL depending on imim / gimim path
     const url = this.locationStrategy.getBaseHref() + '$1$2';
-    return document.replace(/ant?:\/\/([-a-zA-Z0-9@:%._\\+~#=]{1,256})\b([-a-zA-Z0-9@:%_\\+.~#?&\/=]*)/g, url);
+    return document.replace(/anttp?:\/\/([-a-zA-Z0-9@:%._\\+~#=]{1,256})\b([-a-zA-Z0-9@:%_\\+.~#?&\/=]*)/g, url);
   }
 
   createArticleForNewBlog(contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
     const file = new File([contents], name.replace(/ /g, "-").replace(/[^0-9a-z\-]/gi, '').toLowerCase() + ".md", {});
-    formData.append("filename", file);
+    formData.append("files", file);
     return this.http.post<ArticleStatus>('/anttp-0/multipart/public_archive', formData, { responseType: 'json'});
   }
 
   createArticleForExistingBlog(listXor: string, contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
     const file = new File([contents], name.replace(/ /g, "-").replace(/[^0-9a-z\-]/gi, '').toLowerCase() + ".md", {});
-    formData.append("filename", file);
+    formData.append("files", file);
     return this.http.put<ArticleStatus>('/anttp-0/multipart/public_archive/' + listXor, formData, { responseType: 'json'});
   }
 

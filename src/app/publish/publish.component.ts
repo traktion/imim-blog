@@ -75,7 +75,9 @@ export class PublishComponent implements OnInit {
     console.warn("form submit: " + this.articleForm.get('html').value);
     if (this.isSubmitting) {return; }
     this.isSubmitting = true;
-    this.articleMarkdown = new TurndownService({ headingStyle: 'atx' }).turndown(this.articleForm.get('html').value);
+    this.articleMarkdown = new TurndownService({ headingStyle: 'atx' })
+      .turndown(this.articleForm.get('html').value.replace("&nbsp;", " "))
+      .normalize("NFKD");
     console.warn("form markdown: " + this.articleMarkdown);
 
     this.targetBlog = this.articleForm.get('targetBlog').value

@@ -16,10 +16,10 @@ export class NavigationService {
     ];
   }
 
-  update(listXor: string, articleXor?: string): void {
+  update(listXor: string, articlePath?: string): void {
     this.navItems[0].url = this.getListUrl(listXor);
-    if (articleXor) {
-      this.navItems[1].url = this.getArticleUrl(listXor, articleXor);
+    if (articlePath) {
+      this.navItems[1].url = this.getArticleUrl(listXor, articlePath);
     } else {
       this.navItems[1].url = this.navItems[0].url;
     }
@@ -30,8 +30,8 @@ export class NavigationService {
     return 'blog/' + listXor;
   }
 
-  getArticleUrl(listXor: string, articleXor: string): string {
-    return 'blog/' + listXor + '/article/' + articleXor;
+  getArticleUrl(listXor: string, articlePath: string): string {
+    return 'blog/' + listXor + '/article/' + articlePath;
   }
 
   getPublishUrl(listXor: string): string {

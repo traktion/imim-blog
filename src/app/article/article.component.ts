@@ -19,6 +19,8 @@ export class ArticleComponent implements OnInit {
   listXor: string;
   articleXor: string;
   articleUrl: string;
+  filePrefix: string;
+  listSuffix: string;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -32,6 +34,8 @@ export class ArticleComponent implements OnInit {
     this.messageSubscription = new Subscription();
     this.listXor = '';
     this.articleUrl = '';
+    this.filePrefix = '';
+    this.listSuffix = '';
   }
 
   ngOnInit(): void {
@@ -40,6 +44,18 @@ export class ArticleComponent implements OnInit {
     this.articleUrl = this.route.snapshot.url.join('/');
     this.listXor = this.route.snapshot.paramMap.get('listXor') ?? '';
     this.articleXor = this.route.snapshot.paramMap.get('articleXor') ?? '';
+    var path1 = this.route.snapshot.paramMap.get('path1') ?? '';
+    var path2 = this.route.snapshot.paramMap.get('path2') ?? '';
+    if (path1 != '') {
+      this.filePrefix = this.filePrefix + path1;
+      this.listSuffix = this.listSuffix + "/" + path1;
+    }
+    if (path2 != '') {
+      this.filePrefix = this.filePrefix + "/" + path2;
+      this.listSuffix = this.listSuffix + "/" + path2;
+    }
+    if (this.filePrefix != '') this.filePrefix = this.filePrefix + "/";
+    console.log("path1: " + path1 + ", path2: " + path2 + ", this.listSuffix: " + this.listSuffix + ", this.filePrefix: " + this.filePrefix);
 
     this.markdownService.renderer.link = ({href, title, text}) => {
       if (title == null) title = Math.floor(Math.random() * 10000).toString();
@@ -61,28 +77,28 @@ export class ArticleComponent implements OnInit {
       if (title == null) title = Math.floor(Math.random() * 10000).toString();
       var origin = "http://";
       if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
-      console.log("render image: " + href + ", title: " + title)
+      console.log("render image: " + this.filePrefix + href + ", title: " + title)
       if (href.endsWith(".mp4")) {
         return '<video id="' + title + '" width="100%" controls preload="metadata" vjs-fluid vjs-playback-rate class="video-js">'
-          + '<source src="' + origin + this.listXor + '/' + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
+          + '<source src="' + origin + this.listXor + '/' + this.filePrefix + href + '" type="video/mp4" />Your browser does not support the video tag.</video>';
       } else if (href.endsWith(".mp3")) {
         return '<audio controls>'
-          + '<source src="' + origin + this.listXor + '/' + href + '" type="audio/mp3" />Your browser does not support the audio element.</audio>';
+          + '<source src="' + origin + this.listXor + '/' + this.filePrefix + href + '" type="audio/mp3" />Your browser does not support the audio element.</audio>';
       } else if (href.startsWith("data:image")) {
-        return '<img class="img-fluid" src="' + href + '" title="' + title + '" alt="' + text + '">';
+        return '<img class="img-fluid" src="' + this.filePrefix + href + '" title="' + title + '" alt="' + text + '">';
       } else {
-        return '<img class="img-fluid" src="' + origin + this.listXor + '/' + href + '" title="' + title + '" alt="' + text + '">';
+        return '<img class="img-fluid" src="' + origin + this.listXor + '/' + this.filePrefix + href + '" title="' + title + '" alt="' + text + '">';
       }
     };
 
     this.navigationService.update(
-      this.route.snapshot.paramMap.get('listXor') ?? '',
-      this.route.snapshot.paramMap.get('articleXor') ?? ''
+      this.listXor + this.listSuffix,
+      this.articleXor
     );
 
-    this.messageSubscription = this.blogService.getArticle(this.listXor, this.articleXor).subscribe(val => {
+    this.messageSubscription = this.blogService.getArticle(this.listXor + this.listSuffix, this.articleXor).subscribe(val => {
       /*todo: handle double fragments on navigation links*/
-      const url = this.locationStrategy.getBaseHref() + this.navigationService.navItems[1].url;
+      const url = this.locationStrategy.getBaseHref() + this.navigationService.navItems[1].url + "#article";
       this.message = this.blogService.formatMarkdownHeader1(val, url);
       this.message = this.blogService.formatMarkdownSafeUrls(this.message);
       console.log('raw: ' + this.message);

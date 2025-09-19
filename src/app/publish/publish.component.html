@@ -1,5 +1,5 @@
 <div class="container article" >
-
+  <p class="warning">IMPORTANT: This page only functions when using local or pre-funded AntTP</p>
   <form [formGroup]="articleForm" (ngSubmit)="onSubmit()">
     <div class="formElement">
       <label for="targetBlog">Publish To:</label>
@@ -27,21 +27,25 @@
     </div>
   </form>
 
-  <div class="formElement">
-    <div *ngIf="articleStatus$ | async as articleStatus">
-        <p>Publish Details:</p>
-        <p>
-          Status: {{articleStatus.status}}<br/>
-          Message: {{articleStatus.message}}<br/>
-          Immutable Address: <a href="/blog/{{articleStatus.address}}">{{articleStatus.address}}</a>
-        </p>
-    </div>
-    <div *ngIf="pointerAddress != undefined">
-      <p>Pointer Address: <a href="/blog/{{pointerAddress}}">{{pointerAddress}}</a></p>
-    </div>
-    <div *ngIf="registerAddress != undefined">
-      <p>Register Address: <a href="/blog/{{registerAddress}}">{{registerAddress}}</a></p>
-    </div>
+  <div *ngIf="articleStatus$ | async as articleStatus">
+    <table>
+      <tr *ngIf="articleStatus$ | async as articleStatus">
+        <td class="key">Status:</td>
+        <td class="value">{{articleStatus.status}} ({{articleStatus.message}})</td>
+      </tr>
+      <tr *ngIf="articleStatus$ | async as articleStatus">
+        <td class="key">Immutable Address:</td>
+        <td class="value"><a href="/blog/{{articleStatus.address}}#home" target="_blank">{{articleStatus.address}}</a></td>
+      </tr>
+      <tr *ngIf="pointerAddress != undefined">
+        <td class="key">Pointer Address:</td>
+        <td class="value"><a href="/blog/{{pointerAddress}}#home" target="_blank">{{pointerAddress}}</a></td>
+      </tr>
+      <tr *ngIf="registerAddress != undefined">
+        <td class="key">Register Address:</td>
+        <td class="value"><a href="/blog/{{registerAddress}}#home" target="_blank">{{registerAddress}}</a></td>
+      </tr>
+    </table>
   </div>
 
   <hr class="divider">

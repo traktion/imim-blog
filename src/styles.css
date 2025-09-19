@@ -7,7 +7,7 @@
   font-size: 36px;
   font-weight: bold;
   color: black;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article h1 a {
@@ -23,13 +23,13 @@
   margin: 35px 0 0 0;
   font-family: 'Quando', 'Times New Roman', serif;
   font-size: 30px;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article h4 {
   font-size: 16px;
   margin: 0 0 15px 0;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article p {
@@ -38,21 +38,21 @@
   margin: 35px 0 0 0;
   line-height: 160%;
   color: #333333;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article ol li {
   font-family: 'Crimson Text', 'Times New Roman', serif;
   font-size: 22px;
   color: #333333;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article ul li {
   font-family: 'Crimson Text', 'Times New Roman', serif;
   font-size: 22px;
   color: #333333;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article blockquote {
@@ -64,12 +64,12 @@
   background-color: #f2f2f2;
   border-style: none none none groove;
   margin: 10px 10px 1px 1px;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article blockquote p {
   margin: 0px;
-  overflow-wrap: break-word;
+  overflow-wrap: normal;
 }
 
 .article .editor div {
@@ -88,6 +88,17 @@
   max-width: 50em;
   max-height: 50em;
 }
+
+.article table td {
+  padding: 5px;
+}
+
+.article .key {
+  font-weight: bold;
+  width: 15em;
+  text-wrap: nowrap;
+}
+
 
 .fade {
     position:absolute;
@@ -129,6 +140,7 @@
 
 .formElement .editor {
   height: 30em;
+  white-space: normal!important;
 }
 
 .formElement input[type=submit] {
@@ -142,6 +154,15 @@
 
 .article a:hover {
   text-decoration: underline;
+}
+
+.ql-editor {
+  white-space: normal!important;
+}
+
+.warning {
+  font-weight: bold;
+  color: red !important;
 }
 
 /* latin-ext */

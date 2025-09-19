@@ -5,7 +5,7 @@ export class Pointer {
   cost: number;
   counter: number;
 
-  constructor(name: string = '', content: string = '', address: string = '', cost: number = 0, counter: number = 0) {
+  constructor(name: string = '', content: string = '', address: string = '', cost: number = null, counter: number = null) {
     this.name = name;
     this.content = content;
     this.address = address;
