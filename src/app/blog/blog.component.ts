@@ -94,14 +94,14 @@ export class BlogComponent implements OnInit {
 
     this.navigationService.update(this.listXor + this.listSuffix);
 
-    this.blogSubscription = this.blogService.getDirectoryListing(this.listXor)
+    this.blogSubscription = this.blogService.getDirectoryListing(this.listXor + this.listSuffix)
     .subscribe(config => {
       var files = config;
 
       for (const file of files ) {
         if (this.isMarkdown(file)) {
           // note: file.name is the full file.path
-          this.articleSubscription = this.blogService.getArticle(this.listXor, file.name).subscribe(articleContent => {
+          this.articleSubscription = this.blogService.getArticle(this.listXor + this.listSuffix, file.name).subscribe(articleContent => {
             const articleUrl = this.navigationService.getArticleUrl(this.listXor + this.listSuffix, file.name.substring(file.name.lastIndexOf('/') + 1));
             const navArticleUrl = '/' + articleUrl;
             const markdownArticleUrl = this.locationStrategy.getBaseHref() + articleUrl + '#article';
