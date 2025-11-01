@@ -23,14 +23,15 @@ export class BlogService {
     if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
     return this.http.get<Listing[]>(origin + listXor + "/", { responseType: 'json'})
       .pipe(
-        map((items:Listing[]) => items.sort((a: Listing, b: Listing) => {
-          if (a.mtime > b.mtime) {
-            return -1;
-          } else if (a.mtime < b.mtime) {
-            return 1;
-          }
-          return 0
-        }))
+        map(
+          (items:Listing[]) => items.sort((a: Listing, b: Listing) => {
+            if (new Date(a.mtime).getTime() < new Date(b.mtime).getTime()) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
+        )
       );
   }
 
@@ -52,16 +53,22 @@ export class BlogService {
 
   createArticleForNewBlog(contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
-    const file = new File([contents], name.replace(/ /g, "-").replace(/[^0-9a-z\-]/gi, '').toLowerCase() + ".md", {});
+    const file = new File([contents], this.getArticleName(name), {});
     formData.append("files", file);
     return this.http.post<ArticleStatus>('/anttp-0/multipart/public_archive', formData, { responseType: 'json'});
   }
 
   createArticleForExistingBlog(listXor: string, contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
-    const file = new File([contents], name.replace(/ /g, "-").replace(/[^0-9a-z\-]/gi, '').toLowerCase() + ".md", {});
+    const file = new File([contents], this.getArticleName(name), {});
     formData.append("files", file);
     return this.http.put<ArticleStatus>('/anttp-0/multipart/public_archive/' + listXor, formData, { responseType: 'json'});
+  }
+
+  getArticleName(name: string) : string {
+    return name.replace(/ /g, "-")
+      .replace(/[^0-9a-z\-]/gi, '')
+      .toLowerCase() + ".md";
   }
 
   getArticleStatus(id: string): Observable<ArticleStatus> {

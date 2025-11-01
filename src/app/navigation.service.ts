@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {NavItem} from './nav-item';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NavigationService {
 
@@ -10,9 +10,9 @@ export class NavigationService {
 
   constructor() {
     this.navItems = [
-      new NavItem('Home', 'home', '/blog/unknown'),
-      new NavItem('Article', 'article', '/blog/unknown/article/unknown'),
-      new NavItem('Publish', 'publish', '/blog/unknown/publish'),
+      new NavItem('Home', 'home', '/blog/'),
+      new NavItem('Article', 'article', '/blog/'),
+      new NavItem('Publish', 'publish', '/blog/'),
     ];
   }
 

@@ -4,8 +4,8 @@
     <div class="formElement">
       <label for="targetBlog">Publish To:</label>
       <select id="targetBlog" [formControl]="targetBlogControl">
-        <option value="existingBlog">Publish to this blog ({{listXor}})</option>
-        <option value="newBlog">Publish to a new blog</option>
+        <option value="existing" selected>Publish to this blog ({{listXor}})</option>
+        <option value="new">Publish to a new blog</option>
       </select>
     </div>
 
@@ -27,12 +27,12 @@
     </div>
   </form>
 
-  <div *ngIf="articleStatus$ | async as articleStatus">
+  <div *ngIf="status$ | async as status">
+    {{status}}
+  </div>
+
+  <!--<div *ngIf="articleStatus$ | async as articleStatus">
     <table>
-      <tr *ngIf="articleStatus$ | async as articleStatus">
-        <td class="key">Status:</td>
-        <td class="value">{{articleStatus.status}} ({{articleStatus.message}})</td>
-      </tr>
       <tr *ngIf="articleStatus$ | async as articleStatus">
         <td class="key">Immutable Address:</td>
         <td class="value"><a href="/blog/{{articleStatus.address}}#home" target="_blank">{{articleStatus.address}}</a></td>
@@ -46,7 +46,7 @@
         <td class="value"><a href="/blog/{{registerAddress}}#home" target="_blank">{{registerAddress}}</a></td>
       </tr>
     </table>
-  </div>
+  </div>-->
 
   <hr class="divider">
 </div>

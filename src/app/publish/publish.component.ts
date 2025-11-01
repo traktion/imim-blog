@@ -10,7 +10,7 @@ import Block from 'quill/blots/block';
 import TurndownService from 'turndown';
 import {BlogService} from '../blog.service';
 import {ArticleStatus} from '../article_status';
-import {interval, Observable, takeUntil, timer, repeat, filter, take, takeWhile} from 'rxjs';
+import {interval, Observable, takeUntil, timer, repeat, filter, take, takeWhile, of} from 'rxjs';
 import {flatMap, concatMap} from 'rxjs/operators';
 
 Block.tagName = "DIV";
@@ -36,26 +36,18 @@ export class PublishComponent implements OnInit {
     blogName: this.blogNameControl,
     articleName: this.articleNameControl
   });
-  articleStatus$!: Observable<ArticleStatus>;
-  statusTimer$!: Observable<number>;
+  status$!: Observable<string>;
   pointerAddress: string;
   registerAddress: string;
   listXor: string;
   isSubmitting: boolean;
 
   articleMarkdown: string;
-  targetBlog: string;
-  blogName: string;
-  articleName: string;
-  sourceAddress: string;
-  blogAddress: string;
-  blogAddressType: string;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private navigationService: NavigationService,
-    private locationStrategy: LocationStrategy,
     private blogService: BlogService,
   ) {
     this.placeholder = "placeholder";
@@ -73,102 +65,82 @@ export class PublishComponent implements OnInit {
 
   onSubmit() {
     console.warn("form submit: " + this.articleForm.get('html').value);
-    if (this.isSubmitting) {return; }
+    //if (this.isSubmitting) {return; }
     this.isSubmitting = true;
     this.articleMarkdown = new TurndownService({ headingStyle: 'atx' })
       .turndown(this.articleForm.get('html').value.replace("&nbsp;", " "))
       .normalize("NFKD");
     console.warn("form markdown: " + this.articleMarkdown);
 
-    this.targetBlog = this.articleForm.get('targetBlog').value
-    this.blogName = this.articleForm.get('blogName').value;
-    this.articleName = this.articleForm.get('articleName').value;
-    this.sourceAddress = this.listXor;
-    this.blogAddress = this.listXor;
-    this.blogAddressType = 'immutable';
-    if (this.blogService.isImmutable(this.listXor)) {
-      this.createArticle();
-    } else {
-      this.blogService.getPointer(this.listXor).subscribe(pointer => {
-        console.log("pointer: " + pointer.content);
-        if (pointer.content) {
-          this.sourceAddress = this.listXor;
-          this.blogAddress = pointer.content;
-          this.blogAddressType = 'pointer';
-          this.createArticle();
+    const targetBlog = this.articleForm.get('targetBlog').value
+    const blogName = this.articleForm.get('blogName').value;
+    const articleName = this.articleForm.get('articleName').value;
+    const sourceAddress = this.listXor;
+
+    try {
+      if (targetBlog == "existing" && this.listXor != "unknown") {
+        if (this.blogService.isImmutable(this.listXor)) {
+          this.createArticleForExistingBlog(blogName, articleName, this.articleMarkdown, this.listXor, 'immutable', sourceAddress);
         } else {
-          this.blogService.getRegister(this.listXor).subscribe(register => {
-            if (!register.content) {
-              this.sourceAddress = this.listXor;
-              this.blogAddress = register.content;
-              this.blogAddressType = 'register';
-              this.createArticle();
+          this.blogService.getPointer(this.listXor).subscribe(pointer => {
+            console.log("pointer: " + pointer.content);
+            if (pointer.content) {
+              this.createArticleForExistingBlog(blogName, articleName, this.articleMarkdown, pointer.content, 'pointer', sourceAddress);
+            } else {
+              this.blogService.getRegister(this.listXor).subscribe(register => {
+                console.log("register: " + register.content);
+                if (!register.content) {
+                  this.createArticleForExistingBlog(blogName, articleName, this.articleMarkdown, register.content, 'register', sourceAddress);
+                }
+              });
             }
           });
         }
-      });
+      } else {
+        this.createArticleForNewBlog(blogName, articleName, this.articleMarkdown);
+      }
+    } catch(e) {
+      console.log("failed to create article");
+      this.status$ = of("Error: " + e);
     }
   }
 
-  createArticle() {
-    if (this.targetBlog == "existingBlog" ) {
-      console.log("createArticleForExistingBlog: " + this.blogAddress);
-      this.blogService.createArticleForExistingBlog(this.blogAddress, this.articleMarkdown, this.articleName).subscribe(articleStatus => {
-        console.log("articleStatus id: [" + articleStatus.id + "], status: [" + articleStatus.status + "], address: [" + articleStatus.address + "]");
+  createArticleForExistingBlog(blogName: string, articleName: string, articleMarkdown: string, blogAddress: string, blogAddressType: string, sourceAddress: string) {
+    console.log("createArticleForExistingBlog: " + blogName);
+    this.blogService.createArticleForExistingBlog(blogAddress, articleMarkdown, articleName).subscribe(articleStatus => {
+      console.log("articleStatus address: [" + articleStatus.address + "]");
 
-        let status = "";
-        timer(0, 5000)
-          .pipe(
-            takeWhile(() => status != "failed" && status != "succeeded"),
-          )
-          .subscribe(() => {
-            this.articleStatus$ = this.blogService.getArticleStatus(articleStatus.id);
-            this.articleStatus$.subscribe(result => {
-              status = result.status;
-              if (result.status == 'succeeded' && this.blogAddressType == 'pointer') {
-                // set pointer to new address
-                console.log("upload succeeded - updating pointer [" + this.sourceAddress + "], blog name [" + this.blogName + "], address [" + result.address + "]");
-                this.blogService.setPointer(this.sourceAddress, this.blogName, result.address).subscribe(pointer => this.pointerAddress = pointer.address);
-              } else if (result.status == 'succeeded' && this.blogAddressType == 'register') {
-                // set register to new address
-                console.log("upload succeeded - updating register [" + this.sourceAddress + "], blog name [" + this.blogName + "], address [" + result.address + "]");
-                this.blogService.setRegister(this.sourceAddress, this.blogName, result.address).subscribe(register => this.registerAddress = register.address);;
-              } else if (result.status == 'succeeded') {
-                console.log("upload succeeded - creating pointer blog name [" + this.blogName + "], address [" + result.address + "]");
-                this.blogService.createPointer(this.blogName, result.address).subscribe(pointer => this.pointerAddress = pointer.address);
-              } else if (result.status == 'failed') {
-                this.isSubmitting = false;
-              }
-            });
-          });
-      });
-    } else {
-      console.log("createArticleForNewBlog: " + this.blogAddress);
-      this.blogService.createArticleForNewBlog(this.articleMarkdown, this.articleName).subscribe(articleStatus => {
-        console.log("articleStatus id: [" + articleStatus.id + "], status: [" + articleStatus.status + "], address: [" + articleStatus.address + "]");
-
-        let status = "";
-        timer(0, 5000)
-          .pipe(
-            takeWhile(() => status != "failed" && status != "succeeded"),
-          )
-          .subscribe(() => {
-            this.articleStatus$ = this.blogService.getArticleStatus(articleStatus.id);
-            this.articleStatus$.subscribe(result => {
-              status = result.status;
-              if (result.status == 'succeeded') {
-                console.log("upload succeeded - creating pointer blog name [" + this.blogName + "], address [" + result.address + "]");
-                this.blogService.createPointer(this.blogName, result.address).subscribe(pointer => this.pointerAddress = pointer.address);
-              } else if (result.status == 'failed') {
-                this.isSubmitting = false;
-              }
-            });
-          });
-      });
-    }
+      if (blogAddressType == 'pointer') {
+        // set pointer to new address
+        console.log("upload succeeded - updating pointer [" + sourceAddress + "], blog name [" + blogName + "], address [" + articleStatus.address + "]");
+        this.blogService.setPointer(sourceAddress, blogName, articleStatus.address).subscribe(pointer => {
+          this.pointerAddress = pointer.address;
+          this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleName(articleName))]);
+        });
+      } else if (blogAddressType == 'register') {
+        // set register to new address
+        console.log("upload succeeded - updating register [" + sourceAddress + "], blog name [" + blogName + "], address [" + articleStatus.address + "]");
+        this.blogService.setRegister(sourceAddress, blogName, articleStatus.address).subscribe(register => {
+          this.router.navigate([this.navigationService.getArticleUrl(register.address, this.blogService.getArticleName(articleName))]);
+        });;
+      } else {
+        console.log("upload succeeded - creating pointer blog name [" + blogName + "], address [" + articleStatus.address + "]");
+        this.blogService.createPointer(blogName, articleStatus.address).subscribe(pointer => {
+          this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleName(articleName))]);
+        });
+      }
+    });
   }
 
-  onSuccess() {
-    // stop getArticleStatus
+  createArticleForNewBlog(blogName: string, articleName: string, articleMarkdown: string) {
+    console.log("createArticleForNewBlog: " + blogName);
+    this.blogService.createArticleForNewBlog(articleMarkdown, articleName).subscribe(articleStatus => {
+      console.log("articleStatus address: [" + articleStatus.address + "]");
+
+      console.log("upload succeeded - creating pointer blog name [" + blogName + "], address [" + articleStatus.address + "]");
+      this.blogService.createPointer(blogName, articleStatus.address).subscribe(pointer => {
+        this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleName(articleName))]);
+      });
+    });
   }
 }

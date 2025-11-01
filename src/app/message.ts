@@ -1,6 +1,6 @@
 export class Message {
-  url: string;
-  content: string;
+  public url: string;
+  public content: string;
 
   constructor(url: string = '', content: string = '') {
     this.url = url;

@@ -95,12 +95,12 @@ export class BlogComponent implements OnInit {
     this.navigationService.update(this.listXor + this.listSuffix);
 
     this.blogSubscription = this.blogService.getDirectoryListing(this.listXor + this.listSuffix)
-    .subscribe(config => {
-      var files = config;
-
-      for (const file of files ) {
+    .subscribe(files => {
+      for (const file of files) {
         if (this.isMarkdown(file)) {
           // note: file.name is the full file.path
+          const message = new Message('', 'Loading...');
+          this.articles.push(message);
           this.articleSubscription = this.blogService.getArticle(this.listXor + this.listSuffix, file.name).subscribe(articleContent => {
             const articleUrl = this.navigationService.getArticleUrl(this.listXor + this.listSuffix, file.name.substring(file.name.lastIndexOf('/') + 1));
             const navArticleUrl = '/' + articleUrl;
@@ -110,7 +110,8 @@ export class BlogComponent implements OnInit {
               markdownArticleUrl
             );
             articleContent = this.blogService.formatMarkdownSafeUrls(articleContent);
-            this.articles.push(new Message(navArticleUrl, articleContent));
+            message.url = navArticleUrl;
+            message.content = articleContent;
           });
         }
       }
