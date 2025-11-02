@@ -77,7 +77,7 @@ export class BlogService {
   }
 
   public isImmutable(address: string): boolean {
-    return address.length == 64 && /^[a-zA-Z0-9]+$/.test(address);
+    return address.length === 64 && /^[a-zA-Z0-9]+$/.test(address);
   }
 
   public getPointer(address: string): Observable<Pointer> {

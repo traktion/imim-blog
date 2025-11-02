@@ -36,8 +36,8 @@ import { PublishComponent } from './publish/publish.component';
       markedOptions: {
         provide: MARKED_OPTIONS,
         useValue: {
-          gfm: true,
           breaks: false,
+          gfm: true,
           pedantic: false,
         },
       },
