@@ -1,104 +1,116 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {LocationStrategy} from '@angular/common';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Listing} from './listing';
-import {ArticleStatus} from './article_status';
-import {Pointer} from './pointer';
-import {Register} from './register';
-import {LocationStrategy} from '@angular/common';
+import {ArticleStatus} from './model/api/article_status';
+import {Command} from './model/api/command';
+import {Listing} from './model/api/listing';
+import {Pointer} from './model/api/pointer';
+import {Register} from './model/api/register';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BlogService {
 
   constructor(
     private http: HttpClient,
-    private locationStrategy: LocationStrategy
+    private locationStrategy: LocationStrategy,
   ) {}
 
-  getDirectoryListing(listXor: string): Observable<Listing[]> {
-    var origin = "http://";
-    if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
-    return this.http.get<Listing[]>(origin + listXor + "/", { responseType: 'json'})
+  public getDirectoryListing(listXor: string): Observable<Listing[]> {
+    let origin = 'http://';
+    if (window.location.pathname.startsWith('/gimim')) { origin = window.location.origin  + '/'; }
+    return this.http.get<Listing[]>(origin + listXor + '/', { responseType: 'json'})
       .pipe(
         map(
-          (items:Listing[]) => items.sort((a: Listing, b: Listing) => {
+          (items: Listing[]) => items.sort((a: Listing, b: Listing) => {
             if (new Date(a.mtime).getTime() < new Date(b.mtime).getTime()) {
               return 1;
             } else {
               return -1;
             }
-          })
-        )
+          }),
+        ),
       );
   }
 
-  getArticle(listXor: string, filePath: string): Observable<string> {
-    var origin = "http://";
-    if (window.location.pathname.startsWith("/gimim")) origin = window.location.origin  + "/";
-    return this.http.get(origin + listXor + "/" + filePath, { responseType: 'text'});
+  public getArticle(listXor: string, filePath: string): Observable<string> {
+    let origin = 'http://';
+    if (window.location.pathname.startsWith('/gimim')) { origin = window.location.origin  + '/'; }
+    return this.http.get(origin + listXor + '/' + filePath, { responseType: 'text'});
   }
 
-  formatMarkdownHeader1(document: string, articleUrl: string): string {
-    return document.replace(/(# )(.*?)([#]*)[\n]+/, "# [$2](" + articleUrl + ")\n");
+  public formatMarkdownHeader1(document: string, articleUrl: string): string {
+    return document.replace(/(# )(.*?)([#]*)[\n]+/, '# [$2](' + articleUrl + ')\n');
   }
 
-  formatMarkdownSafeUrls(document: string): string {
+  public formatMarkdownSafeUrls(document: string): string {
     // todo: change URL depending on imim / gimim path
     const url = this.locationStrategy.getBaseHref() + '$1$2';
     return document.replace(/anttp?:\/\/([-a-zA-Z0-9@:%._\\+~#=]{1,256})\b([-a-zA-Z0-9@:%_\\+.~#?&\/=]*)/g, url);
   }
 
-  createArticleForNewBlog(contents: string, name: string): Observable<ArticleStatus> {
+  public createArticleForNewBlog(contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
     const file = new File([contents], this.getArticleName(name), {});
-    formData.append("files", file);
+    formData.append('files', file);
     return this.http.post<ArticleStatus>('/anttp-0/multipart/public_archive', formData, { responseType: 'json'});
   }
 
-  createArticleForExistingBlog(listXor: string, contents: string, name: string): Observable<ArticleStatus> {
+  public createArticleForExistingBlog(listXor: string, contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
     const file = new File([contents], this.getArticleName(name), {});
-    formData.append("files", file);
+    formData.append('files', file);
     return this.http.put<ArticleStatus>('/anttp-0/multipart/public_archive/' + listXor, formData, { responseType: 'json'});
   }
 
-  getArticleName(name: string) : string {
-    return name.replace(/ /g, "-")
+  public getArticleName(name: string): string {
+    return name.replace(/ /g, '-')
       .replace(/[^0-9a-z\-]/gi, '')
-      .toLowerCase() + ".md";
+      .toLowerCase() + '.md';
   }
 
-  getArticleStatus(id: string): Observable<ArticleStatus> {
+  public getArticleStatus(id: string): Observable<ArticleStatus> {
     return this.http.get<ArticleStatus>('/anttp-0/public_archive/status/' + id, { responseType: 'json'});
   }
 
-  isImmutable(address: string): boolean {
+  public isImmutable(address: string): boolean {
     return address.length == 64 && /^[a-zA-Z0-9]+$/.test(address);
   }
 
-  getPointer(address: string): Observable<Pointer> {
+  public getPointer(address: string): Observable<Pointer> {
     return this.http.get<Pointer>('/anttp-0/pointer/' + address, { responseType: 'json'});
   }
 
-  setPointer(address: string, name: string, content: string): Observable<Pointer> {
-    let pointer = new Pointer(name, content, address);
+  public setPointer(address: string, name: string, content: string): Observable<Pointer> {
+    const pointer = new Pointer(name, content, address);
     return this.http.put<Pointer>('/anttp-0/pointer/' + address, pointer, { responseType: 'json'});
   }
 
-  createPointer(name: string, content: string): Observable<Pointer> {
-    let pointer = new Pointer(name, content);
+  public createPointer(name: string, content: string): Observable<Pointer> {
+    const pointer = new Pointer(name, content);
     return this.http.post<Pointer>('/anttp-0/pointer', pointer, { responseType: 'json'});
   }
 
-  getRegister(address: string): Observable<Register> {
+  public getRegister(address: string): Observable<Register> {
     return this.http.get<Register>('/anttp-0/register/' + address, { responseType: 'json'});
   }
 
-  setRegister(address: string, name: string, content: string): Observable<Register> {
-    let register = new Register(name, content, address);
+  public setRegister(address: string, name: string, content: string): Observable<Register> {
+    const register = new Register(name, content, address);
     return this.http.put<Register>('/anttp-0/register/' + address, register, { responseType: 'json'});
+  }
+
+  public getCommands(): Observable<Command[]> {
+    return this.http.get<Command[]>('/anttp-0/command', { responseType: 'json'})
+    .pipe(
+      map(
+        (items: Command[]) => items.filter((command) =>
+          command.state !== 'ABORTED', /*&& command.name != 'GetPointerCommand'*/
+        ),
+      ),
+    );
   }
 }

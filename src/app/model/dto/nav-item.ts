@@ -1,7 +1,7 @@
 export class NavItem {
-  title: string;
-  fragment: string;
-  url: string;
+  public title: string;
+  public fragment: string;
+  public url: string;
 
   constructor(title: string = '', fragment: string = '', url: string = '') {
     this.title = title;

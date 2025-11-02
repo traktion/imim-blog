@@ -1,5 +1,5 @@
 export class ArticleStatus {
-  address: string;
+  public address: string;
 
   constructor(address: string = '') {
     this.address = address;

@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NavItem} from '../nav-item';
-import {withLatestFrom} from 'rxjs/operators';
-import {NavigationService} from '../navigation.service';
+import {NavigationService} from '../service/navigation.service';
 
 @Component({
-    selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.css'],
-    standalone: false
+  selector: 'app-header',
+  standalone: false,
+  styleUrls: ['./header.component.css'],
+  templateUrl: './header.component.html',
 })
 export class HeaderComponent implements OnInit {
 
@@ -17,7 +15,7 @@ export class HeaderComponent implements OnInit {
               public navigationService: NavigationService) {
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
   }
 
 }

@@ -1,9 +1,9 @@
 export class Pointer {
-  name: string;
-  content: string;
-  address: string;
-  cost: number;
-  counter: number;
+  public name: string;
+  public content: string;
+  public address: string;
+  public cost: number;
+  public counter: number;
 
   constructor(name: string = '', content: string = '', address: string = '', cost: number = null, counter: number = null) {
     this.name = name;

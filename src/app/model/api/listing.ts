@@ -1,8 +1,8 @@
 export class Listing {
-  name: string;
-  type: string;
-  mtime: string;
-  size: number;
+  public name: string;
+  public type: string;
+  public mtime: string;
+  public size: number;
 
   constructor(name: string = '', type: string = '', mtime: string = '', size: number = 0) {
     this.name = name;

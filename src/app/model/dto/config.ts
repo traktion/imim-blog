@@ -1,6 +1,6 @@
 export class Config {
-  name: string;
-  articles: string[];
+  public name: string;
+  public articles: string[];
 
   constructor(name: string = '', articles: string[]) {
     this.name = name;
