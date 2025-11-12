@@ -1,6 +1,6 @@
 import {LocationStrategy} from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {MarkdownService} from 'ngx-markdown';
 import {NgxSpinnerService} from 'ngx-spinner';
 import {Subscription} from 'rxjs';
@@ -74,7 +74,7 @@ export class BlogComponent implements OnInit {
 
     this.markdownService.renderer.image = ({href, title, text}) => {
       if (title == null) { title = Math.floor(Math.random() * 10000).toString(); }
-      let origin = 'http://';
+      let origin = window.location.protocol + '//';
       if (window.location.pathname.startsWith('/gimim')) { origin = window.location.origin  + '/'; }
       console.log('render image: ' + href + ', title: ' + title);
       if (href.endsWith('.mp4')) {

@@ -20,7 +20,7 @@ export class BlogService {
   ) {}
 
   public getDirectoryListing(listXor: string): Observable<Listing[]> {
-    let origin = 'http://';
+    let origin = window.location.protocol + '//';
     if (window.location.pathname.startsWith('/gimim')) { origin = window.location.origin  + '/'; }
     return this.http.get<Listing[]>(origin + listXor + '/', { responseType: 'json'})
       .pipe(
@@ -37,7 +37,7 @@ export class BlogService {
   }
 
   public getArticle(listXor: string, filePath: string): Observable<string> {
-    let origin = 'http://';
+    let origin = window.location.protocol + '//';
     if (window.location.pathname.startsWith('/gimim')) { origin = window.location.origin  + '/'; }
     return this.http.get(origin + listXor + '/' + filePath, { responseType: 'text'});
   }
