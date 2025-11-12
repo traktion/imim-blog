@@ -1,5 +1,6 @@
 import {LocationStrategy} from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import {Title} from '@angular/platform-browser';
 import {ActivatedRoute} from '@angular/router';
 import {MarkdownService} from 'ngx-markdown';
 import {NgxSpinnerService} from 'ngx-spinner';
@@ -30,7 +31,8 @@ export class BlogComponent implements OnInit {
               private markdownService: MarkdownService,
               private navigationService: NavigationService,
               private locationStrategy: LocationStrategy,
-              private spinner: NgxSpinnerService) {
+              private spinner: NgxSpinnerService,
+              private titleService: Title) {
     this.blogName = 'IMIM';
     this.blogSubscription = new Subscription();
     this.articleSubscription = new Subscription();
@@ -55,6 +57,8 @@ export class BlogComponent implements OnInit {
       this.listSuffix = this.listSuffix + '/' + path2;
     }
     if (this.filePrefix !== '') { this.filePrefix = this.filePrefix + '/'; }
+
+    this.titleService.setTitle('I am IMMUTABLE: ' + this.listXor);
 
     this.markdownService.renderer.link = ({href, title, text}) => {
       if (title == null) { title = Math.floor(Math.random() * 10000).toString(); }

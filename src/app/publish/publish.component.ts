@@ -105,18 +105,18 @@ export class PublishComponent implements OnInit {
         // set pointer to new address
         console.log('upload succeeded - updating pointer blog name [' + blogName + '], address [' + articleStatus.address + ']');
         this.blogService.setPointer(sourceAddress, blogName, articleStatus.address).subscribe((pointer) => {
-          this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleName(articleName))]);
+          this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleFilename(articleName))]);
         });
       } else if (blogAddressType === 'register') {
         // set register to new address
         console.log('upload succeeded - updating register blog name [' + blogName + '], address [' + articleStatus.address + ']');
         this.blogService.setRegister(sourceAddress, blogName, articleStatus.address).subscribe((register) => {
-          this.router.navigate([this.navigationService.getArticleUrl(register.address, this.blogService.getArticleName(articleName))]);
+          this.router.navigate([this.navigationService.getArticleUrl(register.address, this.blogService.getArticleFilename(articleName))]);
         });
       } else {
         console.log('upload succeeded - creating pointer blog name [' + blogName + '], address [' + articleStatus.address + ']');
         this.blogService.createPointer(blogName, articleStatus.address).subscribe((pointer) => {
-          this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleName(articleName))]);
+          this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleFilename(articleName))]);
         });
       }
     });
@@ -129,7 +129,7 @@ export class PublishComponent implements OnInit {
 
       console.log('upload succeeded - creating pointer blog name [' + blogName + '], address [' + articleStatus.address + ']');
       this.blogService.createPointer(blogName, articleStatus.address).subscribe((pointer) => {
-        this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleName(articleName))]);
+        this.router.navigate([this.navigationService.getArticleUrl(pointer.address, this.blogService.getArticleFilename(articleName))]);
       });
     });
   }

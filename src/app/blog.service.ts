@@ -54,19 +54,19 @@ export class BlogService {
 
   public createArticleForNewBlog(contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
-    const file = new File([contents], this.getArticleName(name), {});
+    const file = new File([contents], this.getArticleFilename(name), {});
     formData.append('files', file);
     return this.http.post<ArticleStatus>('/anttp-0/multipart/public_archive', formData, { responseType: 'json'});
   }
 
   public createArticleForExistingBlog(listXor: string, contents: string, name: string): Observable<ArticleStatus> {
     const formData = new FormData();
-    const file = new File([contents], this.getArticleName(name), {});
+    const file = new File([contents], this.getArticleFilename(name), {});
     formData.append('files', file);
     return this.http.put<ArticleStatus>('/anttp-0/multipart/public_archive/' + listXor, formData, { responseType: 'json'});
   }
 
-  public getArticleName(name: string): string {
+  public getArticleFilename(name: string): string {
     return name.replace(/ /g, '-')
       .replace(/[^0-9a-z\-]/gi, '')
       .toLowerCase() + '.md';
