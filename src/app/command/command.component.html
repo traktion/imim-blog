@@ -1,0 +1,13 @@
+<div class="container" *ngFor="let item of commands">
+  <p>id: {{item.id}}</p>
+  <p>name: {{item.name}}</p>
+  <p>properties:</p>
+  <div class="container" *ngFor="let props of item.properties">
+    <p>name: {{props.name}}</p>
+    <p>value: {{props.value}}</p>
+  </div>
+  <p>state: {{item.state}}</p>
+  <p>waitingAt: {{item.waiting_at}}</p>
+  <p>runningAt: {{item.running_at}}</p>
+  <p>terminatedAt: {{item.terminated_at}}</p>
+</div>
